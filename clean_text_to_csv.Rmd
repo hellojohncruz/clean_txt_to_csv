@@ -1,0 +1,57 @@
+---
+title: "clean_text_to_csv"
+author: "John Cruz"
+date: "2023-02-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Required Libraries
+
+```{r library, warning=FALSE}
+library(tidyverse)
+```
+
+---
+
+## Read Text File
+
+```{r read-text_file, warning=FALSE}
+
+df <- data.frame()
+
+con = file('data.txt', "r")
+while (TRUE) {
+  line = readLines(con, n = 1)
+  
+  if (length(line) == 0) {
+     break
+  }
+  
+  print(data.frame(line))
+  df <- bind_rows(df, data.frame(line))
+}
+
+close(con)
+
+```
+
+
+processFile = function(filepath) {
+  con = file(filepath, "r")
+  while ( TRUE ) {
+    line = readLines(con, n = 1)
+    if ( length(line) == 0 ) {
+      break
+    }
+    print(line)
+  }
+
+  close(con)
+}
+
+
+

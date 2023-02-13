@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Required Libraries
 
-```{r library, warning=FALSE}
+```{r library, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(stringr)
 ```
@@ -24,7 +24,7 @@ library(stringr)
 
 df <- data.frame()
 
-con = file('test.txt', "r")
+con = file('data.txt', "r")
 while (TRUE) {
   line = readLines(con, n = 1)
   
@@ -38,7 +38,9 @@ close(con)
 
 ```
 
-``` {r clean dataframe}
+
+
+``` {r drop-non-alphanumeric-rows}
 
 # find rows that has alpha-numeric characters
 for (row in df){
@@ -46,34 +48,88 @@ for (row in df){
 }
 
 # drop non-alpha-numeric rows
-df <- df %>% 
+df_alpha_num <- df %>% 
   filter(., str_alpha == TRUE) %>%
   select(., line)
 
 # drop first two rows containing header info
-df <- df %>%
+df_alpha_num <- df_alpha_num %>%
   slice(-c(1, 2))
 
 ```
 
-``` {r test}
-player_df = data.frame()
 
-for (i in seq(1, nrow(df), by = 2)){
-  row_info <- str_split_fixed(df[i, ],regex("|", literal=TRUE),n=Inf)
-  df_temp <- data.frame(row_info)
-  player_df <- bind_rows(player_df, df_temp[1:10, ])
+
+``` {r extract-player-data, message=FALSE}
+# create empty dataframe
+player_df <- data.frame()
+
+# loop through each row 
+for (i in seq(1, nrow(df_alpha_num), by = 2)){
   
-  row_info <- str_split_fixed(df[i+1, ],regex("|", literal=TRUE),n=Inf)
+  # read every odd row for player id, name and total points
+  row_info <- str_split_fixed(df_alpha_num[i, ],regex("|", literal=TRUE),n=Inf)
   df_temp <- data.frame(row_info)
-  player_df <- bind_rows(player_df, df_temp[1:10, ])
+  temp_cols <- c("player_id", "player_name", "total_pts", "round_1", "round_2", "round_3", "round_4", "round_5", "round_6", "round_7")
+  colnames(df_temp) = temp_cols
+  df_export <- df_temp %>% 
+      select(1:10)
+  
+  # read every even row to add additional columns for player info state and pre-rating
+  row_info <- str_split_fixed(df_alpha_num[i+1, ],regex("|", literal=TRUE),n=Inf)
+  df_temp <- data.frame(row_info)
+  temp_cols <- c("player_state", "pre_rating")
+  colnames(df_temp) = temp_cols
+  df_export <- bind_cols(df_export, df_temp %>% 
+      select(1:2))
+  
+  # extract individual player info to all players dataframe
+  player_df <- bind_rows(player_df, df_export)
 }
-
-player_df <- player_df %>% 
-  select(1:10)
-
-columns= c("player_id", "name", "total_pts", "round_1", "round_2","round_3","round_4","round_5","round_6","round_7")
-colnames(player_df) = columns
-
 ```
+
+``` {r find-opponents}
+for (i in 4:10){
+  player_df[, i] <- gsub("[^0-9]", "", player_df[, i])
+}
+```
+
+``` {r find-pre-rating}
+player_df <- player_df %>% 
+  separate_wider_delim(pre_rating, delim = ": ", names = c('rtg_1', 'rtg_2'))
+
+player_df$pre_rating <- player_df$rtg_2 %>% parse_number()
+```
+
+``` {r trim-whitespace}
+player_df <- player_df %>% 
+  mutate(across(where(is.character), str_trim))
+```
+
+``` {r change-data-types}
+change_type <- c("player_id", "total_pts", "round_1", "round_2", "round_3", "round_4", "round_5", "round_6", "round_7", "pre_rating")
+player_df <- player_df %>% 
+  mutate_at(change_type, as.numeric)
+```
+
+``` {r replace-opponents-with-pre-rating}
+for (i in 1:nrow(player_df)){
+  for (j in 4:10){
+    if (!is.na(player_df[[i,j]])){
+      player_df[i,j] <- player_df %>% 
+        filter(., player_id == player_df[[i, j]]) %>% 
+        select(pre_rating)
+    }
+  }
+}
+```
+
+
+``` {r export_csv}
+player_df <- player_df %>% 
+  select(-c(1, 5, 6)) 
+
+write_csv(player_df, 'chess_players.csv')
+```
+
 

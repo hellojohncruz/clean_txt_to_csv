@@ -1,0 +1,65 @@
+player_id,name,total_pts,state,pre_rating
+    1 , GARY HUA                        ,6.0  ,   ON ,1794
+    2 , DAKSHESH DARURI                 ,6.0  ,   MI ,1553
+    3 , ADITYA BAJAJ                    ,6.0  ,   MI ,1384
+    4 , PATRICK H SCHILLING             ,5.5  ,   MI ,1716
+    5 , HANSHI ZUO                      ,5.5  ,   MI ,1655
+    6 , HANSEN SONG                     ,5.0  ,   OH ,1686
+    7 , GARY DEE SWATHELL               ,5.0  ,   MI ,1649
+    8 , EZEKIEL HOUGHTON                ,5.0  ,   MI ,1641
+    9 , STEFANO LEE                     ,5.0  ,   ON ,1411
+   10 , ANVIT RAO                       ,5.0  ,   MI ,1365
+   11 , CAMERON WILLIAM MC LEMAN        ,4.5  ,   MI ,1712
+   12 , KENNETH J TACK                  ,4.5  ,   MI ,1663
+   13 , TORRANCE HENRY JR               ,4.5  ,   MI ,1666
+   14 , BRADLEY SHAW                    ,4.5  ,   MI ,1610
+   15 , ZACHARY JAMES HOUGHTON          ,4.5  ,   MI ,1220
+   16 , MIKE NIKITIN                    ,4.0  ,   MI ,1604
+   17 , RONALD GRZEGORCZYK              ,4.0  ,   MI ,1629
+   18 , DAVID SUNDEEN                   ,4.0  ,   MI ,1600
+   19 , DIPANKAR ROY                    ,4.0  ,   MI ,1564
+   20 , JASON ZHENG                     ,4.0  ,   MI ,1595
+   21 , DINH DANG BUI                   ,4.0  ,   ON ,1563
+   22 , EUGENE L MCCLURE                ,4.0  ,   MI ,1555
+   23 , ALAN BUI                        ,4.0  ,   ON ,1363
+   24 , MICHAEL R ALDRICH               ,4.0  ,   MI ,1229
+   25 , LOREN SCHWIEBERT                ,3.5  ,   MI ,1745
+   26 , MAX ZHU                         ,3.5  ,   ON ,1579
+   27 , GAURAV GIDWANI                  ,3.5  ,   MI ,1552
+   28 , SOFIA ADINA STANESCU-BELLU      ,3.5  ,   MI ,1507
+   29 , CHIEDOZIE OKORIE                ,3.5  ,   MI ,1602
+   30 , GEORGE AVERY JONES              ,3.5  ,   ON ,1522
+   31 , RISHI SHETTY                    ,3.5  ,   MI ,1494
+   32 , JOSHUA PHILIP MATHEWS           ,3.5  ,   ON ,1441
+   33 , JADE GE                         ,3.5  ,   MI ,1449
+   34 , MICHAEL JEFFERY THOMAS          ,3.5  ,   MI ,1399
+   35 , JOSHUA DAVID LEE                ,3.5  ,   MI ,1438
+   36 , SIDDHARTH JHA                   ,3.5  ,   MI ,1355
+   37 , AMIYATOSH PWNANANDAM            ,3.5  ,   MI ,980
+   38 , BRIAN LIU                       ,3.0  ,   MI ,1423
+   39 , JOEL R HENDON                   ,3.0  ,   MI ,1436
+   40 , FOREST ZHANG                    ,3.0  ,   MI ,1348
+   41 , KYLE WILLIAM MURPHY             ,3.0  ,   MI ,1403
+   42 , JARED GE                        ,3.0  ,   MI ,1332
+   43 , ROBERT GLEN VASEY               ,3.0  ,   MI ,1283
+   44 , JUSTIN D SCHILLING              ,3.0  ,   MI ,1199
+   45 , DEREK YAN                       ,3.0  ,   MI ,1242
+   46 , JACOB ALEXANDER LAVALLEY        ,3.0  ,   MI ,377
+   47 , ERIC WRIGHT                     ,2.5  ,   MI ,1362
+   48 , DANIEL KHAIN                    ,2.5  ,   MI ,1382
+   49 , MICHAEL J MARTIN                ,2.5  ,   MI ,1291
+   50 , SHIVAM JHA                      ,2.5  ,   MI ,1056
+   51 , TEJAS AYYAGARI                  ,2.5  ,   MI ,1011
+   52 , ETHAN GUO                       ,2.5  ,   MI ,935
+   53 , JOSE C YBARRA                   ,2.0  ,   MI ,1393
+   54 , LARRY HODGE                     ,2.0  ,   MI ,1270
+   55 , ALEX KONG                       ,2.0  ,   MI ,1186
+   56 , MARISA RICCI                    ,2.0  ,   MI ,1153
+   57 , MICHAEL LU                      ,2.0  ,   MI ,1092
+   58 , VIRAJ MOHILE                    ,2.0  ,   MI ,917
+   59 , SEAN M MC CORMICK               ,2.0  ,   MI ,853
+   60 , JULIA SHEN                      ,1.5  ,   MI ,967
+   61 , JEZZEL FARKAS                   ,1.5  ,   ON ,955
+   62 , ASHWIN BALAJI                   ,1.0  ,   MI ,1530
+   63 , THOMAS JOSEPH HOSMER            ,1.0  ,   MI ,1175
+   64 , BEN LI                          ,1.0  ,   MI ,1163

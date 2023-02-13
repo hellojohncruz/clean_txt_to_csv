@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r library, warning=FALSE}
 library(tidyverse)
+library(stringr)
 ```
 
 ---
@@ -49,11 +50,30 @@ df <- df %>%
   filter(., str_alpha == TRUE) %>%
   select(., line)
 
-# drop first two rows contaning header info
+# drop first two rows containing header info
 df <- df %>%
   slice(-c(1, 2))
 
+```
 
+``` {r test}
+player_df = data.frame()
+
+for (i in seq(1, nrow(df), by = 2)){
+  row_info <- str_split_fixed(df[i, ],regex("|", literal=TRUE),n=Inf)
+  df_temp <- data.frame(row_info)
+  player_df <- bind_rows(player_df, df_temp[1:10, ])
+  
+  row_info <- str_split_fixed(df[i+1, ],regex("|", literal=TRUE),n=Inf)
+  df_temp <- data.frame(row_info)
+  player_df <- bind_rows(player_df, df_temp[1:10, ])
+}
+
+player_df <- player_df %>% 
+  select(1:10)
+
+columns= c("player_id", "name", "total_pts", "round_1", "round_2","round_3","round_4","round_5","round_6","round_7")
+colnames(player_df) = columns
 
 ```
 

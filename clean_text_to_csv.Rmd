@@ -23,7 +23,7 @@ library(tidyverse)
 
 df <- data.frame()
 
-con = file('data.txt', "r")
+con = file('test.txt', "r")
 while (TRUE) {
   line = readLines(con, n = 1)
   
@@ -31,27 +31,29 @@ while (TRUE) {
      break
   }
   
-  print(data.frame(line))
   df <- bind_rows(df, data.frame(line))
 }
-
 close(con)
 
 ```
 
+``` {r clean dataframe}
 
-processFile = function(filepath) {
-  con = file(filepath, "r")
-  while ( TRUE ) {
-    line = readLines(con, n = 1)
-    if ( length(line) == 0 ) {
-      break
-    }
-    print(line)
-  }
-
-  close(con)
+# find rows that has alpha-numeric characters
+for (row in df){
+  df$str_alpha <- str_detect(row, '[a-zA-Z0-9]')
 }
 
+# drop non-alpha-numeric rows
+df <- df %>% 
+  filter(., str_alpha == TRUE) %>%
+  select(., line)
 
+# drop first two rows contaning header info
+df <- df %>%
+  slice(-c(1, 2))
+
+
+
+```
 

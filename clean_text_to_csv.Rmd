@@ -124,6 +124,13 @@ for (i in 1:nrow(player_df)){
 }
 ```
 
+``` {r calculate-avg-opp-pre-rating}
+player_df %>% 
+  mutate(avg_opp_rating = rowMeans(., pick(round_1:round_7)))
+
+```
+
+
 
 ``` {r export_csv}
 player_df <- player_df %>% 
@@ -132,4 +139,6 @@ player_df <- player_df %>%
 write_csv(player_df, 'chess_players.csv')
 ```
 
-
+Player’s Name, Player’s State, Total Number of Points, Player’s Pre-Rating, and Average Pre Chess Rating of Opponents
+For the first player, the information would be:
+Gary Hua, ON, 6.0, 1794, 1605

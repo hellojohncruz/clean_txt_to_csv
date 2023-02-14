@@ -1,5 +1,5 @@
 ---
-title: "clean_text_to_csv"
+title: "Chess Text File"
 author: "John Cruz"
 date: "2023-02-13"
 output: html_document
@@ -11,37 +11,39 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-The objective is to import a text file containing the results of a chess tournament, extract the information needed, and export to a CSV file that could be used in a database. 
+The objective is to import a text file containing the results of a chess tournament, extract the information needed, and export to a CSV file that could be used in a database.
 
 A preview of the text file being used
 
-![Text Preview]('text_file.png')
+![](https://github.com/hellojohncruz/clean_txt_to_csv/blob/e2828ce97d4ccf38a6d6d69b1ee4b79d8cf594bf/text_file.png?raw=true)
 
----
+------------------------------------------------------------------------
 
 ## Data Dictionary
-| Column          | Description                          |
-| :--------       | :-----------                         |
-| player_name       | player's full name      |
-| player_state      | player's state                |
-| total_pts       | total points           |
-| pre-rating       | player's pre-rating entering the tournament    |
-| avg_opp_rating       | average pre-rating of opponents entering the tournament  |
 
----
+| Column         | Description                                             |
+|:---------------|:--------------------------------------------------------|
+| player_name    | player's full name                                      |
+| player_state   | player's state                                          |
+| total_pts      | total points                                            |
+| pre-rating     | player's pre-rating entering the tournament             |
+| avg_opp_rating | average pre-rating of opponents entering the tournament |
+
+------------------------------------------------------------------------
 
 ## Required Libraries
 
 ```{r library, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(stringr)
+library(ggrepel)
 ```
 
----
+------------------------------------------------------------------------
 
 ## Read Text File
 
-
+This will import the text file, reading each line individually and appending it to a DataFrame.
 
 ```{r read-text_file, warning=FALSE}
 
@@ -61,17 +63,36 @@ close(con)
 
 ```
 
----
+The output of the DataFrame looks like this.
+
+```{r dataframe-original, echo=FALSE}
+knitr::kable(head(df))
+```
+
+------------------------------------------------------------------------
 
 ## Drop Non-Alphanumeric Rows
 
-``` {r drop-non-alphanumeric-rows}
+The next step is to remove rows in the DataFrame that does not provide any useful information at all, such as rows only containing "---". Using *str_detect()*, I looked for rows containing at least some form of alphanumeric values within it.
+
+```{r drop-non-alphanumeric-rows}
 
 # find rows that has alpha-numeric characters
 for (row in df){
   df$str_alpha <- str_detect(row, '[a-zA-Z0-9]')
 }
 
+```
+
+We can see which rows were alphanumeric and which ones were not
+
+```{r dataframe-alpha, echo=FALSE}
+knitr::kable(head(df))
+```
+
+Now lets drop these rows and the header rows we do not need
+
+```{r drop-rows}
 # drop non-alpha-numeric rows
 df_alpha_num <- df %>% 
   filter(., str_alpha == TRUE) %>%
@@ -80,14 +101,21 @@ df_alpha_num <- df %>%
 # drop first two rows containing header info
 df_alpha_num <- df_alpha_num %>%
   slice(-c(1, 2))
-
 ```
 
----
+Here is the output contaning only the player information
+
+```{r dataframe-alpha-player, echo=FALSE}
+knitr::kable(head(df_alpha_num))
+```
+
+------------------------------------------------------------------------
 
 ## Extract Player Data
 
-``` {r extract-player-data, message=FALSE}
+Every two rows contains a individual's tournament information. The DataFrame will be parsed between "\|" characters and added into individual columns for each player. The columns of interest will then be selected and placed into a new DataFrame.
+
+```{r extract-player-data, message=FALSE}
 # create empty dataframe
 player_df <- data.frame()
 
@@ -115,39 +143,67 @@ for (i in seq(1, nrow(df_alpha_num), by = 2)){
 }
 ```
 
----
+Here we can see an example of how the information was separated
+
+```{r dataframe-parsed, echo=FALSE}
+knitr::kable(head(df_temp))
+```
+
+Finally, we get a DataFrame that begins to look more manageable to work with
+
+```{r dataframe-extract, echo=FALSE}
+knitr::kable(head(player_df))
+```
+
+------------------------------------------------------------------------
 
 ## Clean Strings
 
-``` {r find-opponents}
+We can see that some of the columns need to be further cleaned because they contain more information than needed. The next step was removing the decision such as "W" for win, and solely keeping the numeric value as it tells us the player ID of the person they played that round.
+
+```{r find-opponents}
 for (i in 4:10){
   player_df[, i] <- gsub("[^0-9]", "", player_df[, i])
 }
 ```
 
-``` {r find-pre-rating}
+Next, the player's pre-rating is right after the ":" but before "\<-". For example, in "14959604 / R: 1384 -\>1640", 1384 would be the player's pre-rating. The number will be extracted using *parse_number()*
+
+```{r find-pre-rating}
 player_df <- player_df %>% 
   separate_wider_delim(pre_rating, delim = ": ", names = c('rtg_1', 'rtg_2'))
 
 player_df$pre_rating <- player_df$rtg_2 %>% parse_number()
 ```
 
-``` {r trim-whitespace}
+This will remove preceding and following whitespaces in a string throughout the DataFrame.
+
+```{r trim-whitespace}
 player_df <- player_df %>% 
   mutate(across(where(is.character), str_trim))
 ```
 
-``` {r change-data-types}
+Finally, the columns data types were change where appropriately needed.
+
+```{r change-data-types}
 change_type <- c("player_id", "total_pts", "round_1", "round_2", "round_3", "round_4", "round_5", "round_6", "round_7", "pre_rating")
 player_df <- player_df %>% 
   mutate_at(change_type, as.numeric)
 ```
 
----
+The DataFrame now looks like this.
+
+```{r dataframe-parse, echo=FALSE}
+knitr::kable(head(player_df))
+```
+
+------------------------------------------------------------------------
 
 ## Determine Opponents Average Pre-Ratings
 
-``` {r replace-opponents-with-pre-rating}
+As mentioned before, each round column contains the opponent they played. Now, that opponent's player ID will be replaced with the opponent's pre-rating instead. This is so we can calculate the opponent's average pre-rating for the player.
+
+```{r replace-opponents-with-pre-rating}
 for (i in 1:nrow(player_df)){
   for (j in 4:10){
     if (!is.na(player_df[[i,j]])){
@@ -159,16 +215,28 @@ for (i in 1:nrow(player_df)){
 }
 ```
 
-``` {r calculate-avg-opp-pre-rating}
-player_df <- player_df %>% 
-  mutate(avg_opp_rating = round(rowMeans(pick(round_1:round_7), na.rm=TRUE), 2))
+```{r dataframe-ratings, echo=FALSE}
+knitr::kable(head(player_df))
 ```
 
----
+Here, we finally calculate the average opponent pre-rating
+
+```{r calculate-avg-opp-pre-rating}
+player_df <- player_df %>% 
+  mutate(avg_opp_pre_rating = round(rowMeans(pick(round_1:round_7), na.rm=TRUE), 2))
+```
+
+```{r dataframe-avg-ratings, echo=FALSE}
+knitr::kable(head(player_df))
+```
+
+------------------------------------------------------------------------
 
 ## Export to CSV
 
-``` {r export_csv}
+Now that we have the data we want, we can export the columns of interest to CSV.
+
+```{r export_csv}
 export_df <- player_df %>% 
   select(-c(1, 4:10, 12, 13)) %>% 
   select(c(1, 3, 2, 4, 5)) 
@@ -176,3 +244,32 @@ export_df <- player_df %>%
 write_csv(export_df, 'chess_players.csv')
 ```
 
+```{r dataframe-export, echo=FALSE}
+knitr::kable(head(export_df))
+```
+
+---
+
+## Conclusion
+
+Calculating the pre-rating difference between the player and average player rating, we can see some players had a tougher road to reach the top in total points earned. Aditya Bajaj had the largest difference of almost -180 pre-rating to their average opponent, yet collected 6.0 total points. 
+
+```{r graph, echo=FALSE}
+graph_df <- export_df |> 
+  group_by(player_state) |>
+  slice_max(order_by = total_pts, n = 3) |>
+  mutate(rating_diff = pre_rating - avg_opp_pre_rating)
+
+graph_df |> 
+  ggplot(aes(x = rating_diff, y = total_pts, label = player_name, fill = player_state)) +
+  geom_point() +
+  geom_label_repel(box.padding = 0.5)
+
+knitr::kable(graph_df)
+```
+
+---
+
+## Recommendations
+
+Reviewing the methods used, alternatives along the way could have been done. Utilizing regular expressions and creating flexibility on the column headers. This would allow us to create a DataFrame that collected all the data provided in long format.  

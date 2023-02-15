@@ -1,0 +1,11 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/1002772/06ecd8fd19f545b2a5e32104f4020ce9
+bundleId: https://api.rpubs.com/api/v1/document/1002772/06ecd8fd19f545b2a5e32104f4020ce9
+url: http://rpubs.com/hellojohncruz/1002772
+when: 1676486449.65755
+lastSyncTime: 1676486449.65756

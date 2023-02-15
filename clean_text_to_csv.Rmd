@@ -258,7 +258,9 @@ Calculating the pre-rating difference between the player and average player rati
 graph_df <- export_df |> 
   group_by(player_state) |>
   slice_max(order_by = total_pts, n = 3) |>
-  mutate(rating_diff = pre_rating - avg_opp_pre_rating)
+  mutate(rating_diff = pre_rating - avg_opp_pre_rating) |>
+  arrange(desc(total_pts), rating_diff) |> 
+  select(player_name, player_state, total_pts, rating_diff)
 
 graph_df |> 
   ggplot(aes(x = rating_diff, y = total_pts, label = player_name, fill = player_state)) +
